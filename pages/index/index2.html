@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="zh">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>系统面板</title>
+		<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
+		<link rel="stylesheet" type="text/css" href="css/index.css" />
+		<script src="js/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/bootstrap.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/echarts.min.js" type="text/javascript" charset="utf-8"></script>
+
+	</head>
+	<body>
+		<div class="main">
+			<header>
+				<nav class="navbar navbar-inverse">
+					<div class="container-fluid">
+						<div class="navbar-header">
+							<a class="navbar-brand" href="">系统面板</a>
+						</div>
+						<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+							<ul class="nav navbar-nav">
+								<li class="active"><a href="">性能 <span class="sr-only">(current)</span></a></li>
+								<li><a href="">日志</a></li>
+							</ul>
+
+							<ul class="nav navbar-nav navbar-right">
+								<li>
+									<form class="navbar-form navbar-left">
+										<div class="form-group">
+											<input type="text" class="form-control" placeholder="输入关键词">
+										</div>
+										<button type="submit" class="btn btn-default">搜索</button>
+									</form>
+								</li>
+
+								<li class="brush"><a href="">刷新</a></li>
+								<li class="dropdown">
+									<a href="" class="dropdown-toggle" data-toggle="dropdown" role="button"
+										aria-haspopup="true" aria-expanded="false">更多 <span class="caret"></span></a>
+									<ul class="dropdown-menu">
+										<li><a href="mailto:2171130556@qq.com">联系作者</a></li>
+										<li><a href="https://github.com/Tan-TanZi">项目地址</a></li>
+										<li role="separator" class="divider"></li>
+										<li class="stop"><a href="">静止监听</a></li>
+										<li class="clo"><a href="">关闭页面</a></li>
+									</ul>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</nav>
+			</header>
+
+			<!-- 展区 -->
+			<div class="exhibition_area">
+
+				<!-- 背景图片 -->
+				<div class="container-fluid bg"></div>
+
+				<!-- 主展区 -->
+				<div class="exhibition_area2">
+					<div class="left col-lg-7 col-md-7">
+						<div class="item col-lg-6 col-md-6 active" data-type="cpu">
+							<div class="panel panel-default">
+								<div class="panel-heading">CPU</div>
+								<div class="panel-body">
+									<canvas id="canvas01" width="500" height="500"></canvas>
+								</div>
+							</div>
+						</div>
+						<div class="item col-lg-6 col-md-6" data-type="gpu">
+							<div class="panel panel-default">
+								<div class="panel-heading">GPU</div>
+								<div class="panel-body">
+									<canvas id="canvas02" width="500" height="500"></canvas>
+								</div>
+							</div>
+						</div>
+						<div class="item col-lg-6 col-md-6" data-type="Memory">
+							<div class="panel panel-default">
+								<div class="panel-heading">内存</div>
+								<div class="panel-body">
+									<canvas id="canvas03" width="500" height="500"></canvas>
+								</div>
+							</div>
+						</div>
+						<div class="item col-lg-6 col-md-6" data-type="disk">
+							<div class="panel panel-default">
+								<div class="panel-heading">磁盘</div>
+								<div class="panel-body">
+									<canvas id="canvas04" width="500" height="500"></canvas>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="right col-lg-5 col-md-5">
+						<div class="panel panel-default col-lg-12 col-md-12">
+							<div class="panel-heading" onclick="alert1('测试啦~~')">记录数据</div>
+							<div class="panel-body">
+								<canvas id="canvasA" width="719.4" height="589.05‬"></canvas>
+							</div>
+						</div>
+					</div>
+
+				</div>
+
+			</div>
+			<footer class="text-center footer">
+				<p>谈笑间开发</p>
+				<p>服务器基于node.js</p>
+			</footer>
+			<!-- 弹窗 -->
+			<div class="alert1">
+				ok·····
+			</div>
+
+		</div>
+	</body>
+	<script type="text/javascript">
+		//一个弹窗
+		function alert1(text) {
+			document.querySelector('.alert1').innerHTML = text;
+			document.querySelector('.alert1').classList.add('active');
+			setTimeout(() => {
+				document.querySelector('.alert1').classList.remove('active');
+			}, 1400)
+		}
+	</script>
+	<script src="js/canvas01.js" type="text/javascript" charset="utf-8"></script>
+	<script src="js/canvas02.js" type="text/javascript" charset="utf-8"></script>
+	<script src="js/canvas03.js" type="text/javascript" charset="utf-8"></script>
+	<script src="js/canvas04.js" type="text/javascript" charset="utf-8"></script>
+	<script src="js/canvasA.js" type="text/javascript" charset="utf-8"></script>
+
+	<script type="text/javascript">
+		let doms = document.querySelectorAll('.left .item');
+
+		doms.forEach((item1) => {
+			item1.addEventListener('click', (item2) => {
+				doms.forEach((item3) => {
+					item3.classList.remove('active');
+				})
+				item1.classList.add('active');
+			})
+		})
+	</script>
+
+	<!-- 发送请求 -->
+	<script type="text/javascript">
+		let is_type = [];
+		let title = 'cpu';
+
+		//采用ws
+		function getData2() {
+			const ws = new WebSocket('ws://localhost:8083');
+			ws.onopen = function(event) {
+				ws.send("Hello"); //不能放外面
+			};
+			// 监听消息事件
+			ws.onmessage = (event) => {
+				const message = JSON.parse(event.data);
+				console.log(message);
+				myChart01.setOption({
+					series: [{
+						data: [{
+							value: message.cpu
+						}]
+					}]
+				});
+				myChart02.setOption({
+					series: [{
+						data: [{
+							value: message.gpu
+						}]
+					}]
+				});
+				let va = ((message.Memory[0] - message.Memory[1]) / message.Memory[0]) * 100;
+				myChart03.setOption({
+					series: [{
+						data: [{
+							value: va.toFixed(3)
+						}]
+					}]
+				});
+				myChart04.setOption({
+					series: [{
+						max: message.disk[1].toFixed(0),
+						data: [{
+							value: message.disk[0]
+						}]
+					}]
+				});
+
+
+
+				//折线图
+				setTimeout(function() {
+
+
+					//当从不滚动模式切换回滚动的时候，有大量之前的数据，故要for清楚他们，以保证在指定数量下观看
+					if (data2.length > 20 && gun) {
+						for (let ii = 0; data2.length > 14; ii++) {
+							data2.shift();
+						}
+					} else if (data2.length > 14 && gun) {
+						data2.shift();
+					}
+
+					//判断类型
+					let item0 = document.querySelector('.left .item.active');
+					let type0 = item0.getAttribute('data-type');
+					console.log(type0);
+
+					//为了确认用户是否进行了切换(不包括再次点击当前已选择的),如切换了就清空
+					is_type.push(type0);
+					if (is_type.length > 2) {
+						is_type.shift();
+					}
+					if (is_type[0] != is_type[1]) {
+						//清空
+						data2 = [];
+						//更换标题
+						title = type0.toUpperCase();
+						switch (type0) {
+							case 'Memory':
+								title = "内存";
+								break;
+							case 'disk':
+								title = "磁盘";
+								break;
+						}
+					}
+
+					switch (type0) {
+						case 'cpu':
+							data2.push(gettime(message.cpu));
+							break;
+						case 'gpu':
+							data2.push(gettime(message.gpu));
+							break;
+						case 'Memory':
+							data2.push(gettime(va.toFixed(3)));
+							break;
+						case 'disk':
+							data2.push(gettime(message.disk[0]));
+							break;
+					}
+					myChartA.setOption({
+						title: {
+							text: title + "占用率"
+						},
+						xAxis: {
+							show: display
+						},
+						yAxis: {
+							show: display
+						},
+						series: [{
+							data: data2
+						}]
+					});
+				}, 1000);
+
+			};
+			document.querySelector(".stop").addEventListener('click', (e) => {
+				e.preventDefault()
+				ws.close();
+			})
+		}
+		getData2();
+	</script>
+
+	<script type="text/javascript">
+		document.querySelector(".brush").addEventListener('click', (e) => {
+			e.preventDefault()
+			window.location.reload();
+		})
+		document.querySelector(".clo").addEventListener('click', (e) => {
+			e.preventDefault()
+			window.close();
+		})
+	</script>
+</html>
