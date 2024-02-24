@@ -33,7 +33,7 @@ npm config set registry https://registry.npmmirror.com
 - 使用的是EventSource(SSE)
 
 ```
-npm run server.js
+node server.js
 ```
 
 ​		浏览器打开：http://127.0.0.1:8081/index.html
@@ -41,7 +41,7 @@ npm run server.js
 - 使用的是WebSocket
 
 ```
-npm run server2.js
+node server2.js
 ```
 
 ​		浏览器打开：http://127.0.0.1:8082/index2.html
